@@ -1,4 +1,4 @@
-const ble_address = "fe:89:d1:67:8b:5f random";
+const ble_address = "c5:a7:9d:69:f5:66 random";
 const ftms_service = "1826";
 const bike_char = "2AD2";
 
@@ -29,12 +29,15 @@ function updateScreen(cog1, cog2) {
 
 function getClosestCog(speed, cadence, chainring) {
 	// calculate expected cog
-	const expectedCog = (chainring / speed) * wheelCircumference * (60 / 1000);
+	const expectedCog = (chainring / speed) * cadence * wheelCircumference * (60 / 1000);
+
+	console.log(expectedCog);
 
 	// find closest actual cog
 	let diff = 100;
 	let actualCog = 0;
-	for (let cog in cogs) {
+	for (let i = 0; i < cogs.length; i++) {
+		const cog = cogs[i];
 		if (Math.abs(cog - expectedCog) < diff) {
 			diff = Math.abs(cog - expectedCog);
 			actualCog = cog;
@@ -45,14 +48,22 @@ function getClosestCog(speed, cadence, chainring) {
 }
 
 function onNotify(event) {
-	const data = event.target.value.buffer;
-	const speed = data[1] / 100;
-	const cadence = data[3] / 2;
+	const dataview = event.target.value;
 
-	const cog1 = getClosestCog(speed, cadence, chainrings[0]);
-	const cog2 = getClosestCog(speed, cadence, chainrings[1]);
+	let speed = dataview.getUint16(2, true);
+	speed = speed * 0.01;
 
-	updateScreen(cog1, cog2);
+	// Assuming that average speed is not returned otherwise it would be the 6th byte.
+	let cadence = dataview.getUint16(4, true);
+	cadence = cadence * 0.5;
+
+	// only update if still pedalling
+	if (cadence > 0) {
+		const cog1 = getClosestCog(speed, cadence, chainrings[0]);
+		const cog2 = getClosestCog(speed, cadence, chainrings[1]);
+
+		updateScreen(cog1, cog2);
+	}
 }
 
 g.clear();
