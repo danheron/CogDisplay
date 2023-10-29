@@ -81,5 +81,8 @@ NRF.connect(ble_address).then(function(gatt) {
 	characteristic.on("characteristicvaluechanged", onNotify);
 	return characteristic.startNotifications();
 }).then(function() {
-	writeLine("Started.");
+	updateScreen(0, 0);
+}).catch(function(error) {
+	writeLine("Failed.");
+	console.log(error.message);
 });
