@@ -31,8 +31,6 @@ function getClosestCog(speed, cadence, chainring) {
 	// calculate expected cog
 	const expectedCog = (chainring / speed) * cadence * wheelCircumference * (60 / 1000);
 
-	console.log(expectedCog);
-
 	// find closest actual cog
 	let diff = 100;
 	let actualCog = 0;
