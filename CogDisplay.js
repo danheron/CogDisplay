@@ -6,6 +6,8 @@ const chainrings = [39,53];
 const cogs = [11,12,13,14,15,17,19,22,25,28];
 const wheelCircumference = 2.096;
 
+const backlightOn = true;
+
 let gPos = 0;
 function writeLine(text) {
 	// Write text to screen
@@ -65,6 +67,7 @@ function onNotify(event) {
 }
 
 g.clear();
+LED1.set();
 writeLine("Connecting to fitness machine...");
 NRF.connect(ble_address).then(function(gatt) {
 	writeLine("Connected.");
